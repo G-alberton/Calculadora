@@ -1,0 +1,138 @@
+@charset "UTF-8";
+
+:root {
+    --bg-body: #f4f7f9;
+    --calc-white: #ffffff;
+    --display-bg: #f8fafc;
+    --text-dark: #0f172a;
+    --btn-gray: #f1f5f9;
+    --btn-gray-dark: #e2e8f0;
+    --btn-operator: #1e293b;
+    --accent: #334155;
+}
+
+body {
+    background-color: var(--bg-body);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.calculator-container {
+    background: var(--calc-white);
+    padding: 30px;
+    border-radius: 32px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    width: 360px;
+}
+
+.calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 5px;
+}
+
+.logo {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.1rem;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.header-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.header-btn:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.header-btn:active {
+    transform: scale(0.95);
+}
+
+.header-btn.exit:hover {
+    color: #ef4444; 
+}
+
+.display {
+    background: var(--display-bg);
+    height: 100px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 24px;
+    margin-bottom: 24px;
+    border: 1px solid #f1f5f9;
+}
+
+.current-operand {
+    font-size: 42px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.btn {
+    height: 70px;
+    border: none;
+    border-radius: 18px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--btn-gray);
+    color: var(--text-dark);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efeito de mouse em cima e Clique */
+.btn:hover {
+    background: var(--btn-gray-dark);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(1px) scale(0.96);
+}
+
+.fn-btn { background: var(--btn-gray-dark); }
+
+.operator {
+    background: var(--btn-operator);
+    color: white;
+}
+
+.operator:hover { background: var(--accent); }
+
+.equal {
+    background: var(--btn-operator);
+    color: white;
+}
+
+.double-width { grid-column: span 2; }
