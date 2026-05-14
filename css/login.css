@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 :root {
     --bg-color: #f8faff;
     --card-bg: #ffffff;
@@ -21,63 +23,71 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 20px;
 }
 
+/* painel do login */
 .auth-card {
     background: var(--card-bg);
-    width: 100%;
-    max-width: 400px;
-    padding: 40px;
+
+    width: 900px; 
+
+    padding: 40px 60px;
+
     border-radius: 24px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
     border: 1px solid var(--border-color);
 }
 
+/* header */
 .auth-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 .icon-circle {
     background: var(--accent-color);
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
+
+    margin: 0 auto 18px;
 }
 
 .auth-header h2 {
     color: var(--text-main);
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-bottom: 8px;
 }
 
 .auth-header p {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
-/* Abas */
+/* as aba  */
 .tab-selector {
     background: #f1f5f9;
     display: flex;
-    padding: 4px;
-    border-radius: 12px;
-    margin-bottom: 25px;
+    padding: 5px;
+    border-radius: 14px;
+    margin-bottom: 30px;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 10px;
+    padding: 14px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     background: transparent;
     color: var(--text-muted);
     font-weight: 600;
+    font-size: 1rem;
     transition: 0.2s;
 }
 
@@ -87,26 +97,30 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Inputs */
+/* os input */
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .input-group label {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: var(--text-main);
 }
 
 .input-group input {
     width: 100%;
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: 16px 20px;
+
+    border-radius: 14px;
     border: 1px solid var(--border-color);
+
     background: var(--input-bg);
+
     font-size: 1rem;
+
     outline: none;
     transition: 0.2s;
 }
@@ -114,28 +128,42 @@ body {
 .input-group input:focus {
     border-color: var(--accent-color);
     background: white;
+    box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
 }
 
-/* Botão Principal */
+/* botão */
 .submit-btn {
     width: 100%;
-    padding: 14px;
+    padding: 16px;
+
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
+
     background: var(--accent-color);
     color: white;
+
     font-size: 1rem;
     font-weight: 600;
+
     cursor: pointer;
     transition: 0.2s;
+
     margin-top: 10px;
 }
 
 .submit-btn:hover {
-    opacity: 0.9;
+    opacity: 0.95;
     transform: translateY(-1px);
 }
 
 .submit-btn:active {
     transform: translateY(0);
+}
+
+/* responsivo */
+@media (max-width: 950px) {
+    .auth-card {
+        width: 100%;
+        padding: 30px;
+    }
 }
