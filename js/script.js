@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.className = 'history-item';
         item.style.padding = "15px";
         item.style.borderBottom = "1px solid #e2e8f0";
-        item.style.textAlign = "right"; // Corrigido: right
+        item.style.textAlign = "right"; 
 
         item.innerHTML = `${n1} ${op} ${n2} = <strong>${resultado}</strong>`;
 
@@ -85,32 +85,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstOperand === null || operato === null) return;
 
             const secondOperand = currentInput;
-            const dateBack = {
-                n1: firstOperand,
-                n2: secondOperand,
-                operacao: operato
-            };
+            const operatorMap = { 'x': '*', '÷': '/'};
+            const operetorNormalizado = operatorMap[operato] || operato;
 
-            //coloca 
-            // Simulação de cálculo (Troca os símbolos para o eval entender)
             try {
-                const expressao = `${dateBack.n1}${dateBack.operacao.replace('×','*').replace('÷','/')}${dateBack.n2}`;
-                const resultadoSimulado = eval(expressao);
-                
-                // 1. Atualiza Display
-                currentInput = resultadoSimulado.toString();
+
+                const response = await fetch(`${API_URL}/api/calculations`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        fisrtNumber: firstOperand,
+                        secondNumber: secondOperand,
+                        operator: operetorNormalizado
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    currentInput = data.message || 'Erro';
+                    updateDisplay();
+                    return;
+                }
+
+                currentInput = data.calculation.result.toString();
                 updateDisplay();
 
-                // 2. Adiciona ao Histórico
-                addToHistory(dateBack.n1, dateBack.operacao, dateBack.n2, resultadoSimulado);
-
-                // 3. Reseta para a próxima conta
                 firstOperand = null;
                 operato = null;
-
             } catch (error) {
-                console.error("Erro no cálculo:", error);
-                currentInput = "Erro";
+                console.error('Erro na requisição:', error);
+                currentInput = 'Erro';
                 updateDisplay();
             }
         });
