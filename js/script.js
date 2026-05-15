@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sectionHistory.style.display = 'block';
             btnHistory.classList.add('active');
             btnCalc.classList.remove('active');
-            carregarHistorico(); // MELHORIA: busca do backend ao abrir a aba
+            carregarHistorico(); 
         }
     };
 
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Igual ---
+    // --- Ingual ---
     const equalsBtn = document.getElementById('equals-btn');
     if (equalsBtn) {
         equalsBtn.addEventListener('click', async () => {
@@ -180,6 +180,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 expressao[expressao.length - 1] = (parseFloat(ultimo) / 100).toString();
                 atualizarDisplay();
             }
+        });
+    }
+
+    // ----- BACKSPACE -----
+    const backspaceBtn = document.querySelector('[data-action="backspace"]');
+    if (backspaceBtn) {
+        backspaceBtn.addEventListener('click', () => {
+            // Não faz nada se acabou de calcular ou está vazio
+            if (acabouDeCalcular || expressao.length === 0) return;
+
+            const ultimo = expressao[expressao.length - 1];
+
+            if (ehOperador(ultimo)) {
+                // Se o último token é um operador, remove ele inteiro
+                expressao.pop();
+                digitandoNumero = true;
+            } else if (ultimo.length > 1) {
+                // Se o número tem mais de um dígito, apaga só o último
+                expressao[expressao.length - 1] = ultimo.slice(0, -1);
+            } else {
+                // Se sobrou só um dígito, remove o token inteiro
+                expressao.pop();
+                // Se agora o último for operador, volta modo de espera
+                const novoUltimo = expressao[expressao.length - 1];
+                digitandoNumero = novoUltimo ? !ehOperador(novoUltimo) : false;
+            }
+
+            atualizarDisplay();
         });
     }
 
