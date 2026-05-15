@@ -1,6 +1,7 @@
-const {pool} = require('./pool');
+// BUG CORRIGIDO: tinha require('./pool') e new Pool misturados
+const { Pool } = require('pg');
 
-const pool = new Pool ({
+const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 

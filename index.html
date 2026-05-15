@@ -26,7 +26,10 @@
 
         <main class="auth-card">
             <section id="section-calc">
-                <div class="display" id="display-value">0</div>
+                <div class="display">
+                    <div id="display-expressao" style="font-size:0.5em; min-height:1.2em; color:#888; text-align:right; word-break:break-all;"></div>
+                    <div id="display-value">0</div>
+                </div>
                 <div class="buttons-grid">
                     <button class="btn fn btn" data-action="clear">AC</button>
                     <button class="btn fn-btn" data-action="sign">+/-</button>
@@ -59,7 +62,6 @@
                 <div class="history-box">
                     <p class="empty-msg">Nenhum Cálculo ainda. Volte para o calculadora e faça uma operação.</p>
                     <div id="history-list"></div>
-                    <button id="btn-clear-history">Limpar histórico</button>
                 </div>
             </section>
         </main>
