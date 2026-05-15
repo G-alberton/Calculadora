@@ -29,53 +29,76 @@ body {
 }
 
 /* --- CABEÇALHO SUPERIOR --- */
+/* --- CABEÇALHO SUPERIOR --- */
+
 .top-nav {
     width: 100%;
+    
     background: var(--calc-white);
+
     border-bottom: 1px solid var(--border-color);
-    padding: 12px 0;
-    margin-bottom: 50px; /* Distância entre o topo e a calculadora */
+
+    padding: 16px 40px;
+
+    margin-bottom: 50px;
+
+    display: flex;
+    justify-content: center;
 }
 
 .nav-container {
-    max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
 }
+
+/* LOGO */
 
 .logo-area {
     display: flex;
     align-items: center;
     gap: 10px;
+
     font-weight: 700;
     color: var(--text-main);
-    font-size: 1.1rem;
+
+    font-size: 1.2rem;
 }
+
+/* BOTÕES */
 
 .nav-actions {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .header-btn {
     background: transparent;
+
     border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.9rem;
+
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    font-size: 0.95rem;
     font-weight: 600;
+
     color: var(--text-muted);
+
     cursor: pointer;
+
     transition: 0.2s;
+
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.header-btn:hover, .header-btn.active {
+.header-btn:hover,
+.header-btn.active {
     background: var(--btn-gray);
     color: var(--text-main);
 }
