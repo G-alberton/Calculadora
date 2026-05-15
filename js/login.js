@@ -1,3 +1,5 @@
+const API_URL = 'http://localhost:3000';
+
 document.addEventListener('DOMContentLoaded', () => {
     const tabLogin = document.getElementById('tab-login');
     const tabRegister = document.getElementById('tab-register');
@@ -12,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tabLogin.classList.add('active');
         tabRegister.classList.remove('active');
         mainBtn.innerText = 'Entrar';
+
+        const nameGroup = document.getElementById('name-group');
+        if (nameGroup) nameGroup.remove();
     });
 
     // Alternar para Cadastro
@@ -20,6 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
         tabRegister.classList.add('active');
         tabLogin.classList.remove('active');
         mainBtn.innerText = 'Cadastrar';
+
+        if (!document.getElementById('name-group')) {
+            const nameGroup = document.createElement('div');
+            nameGroup.classList = 'input-group';
+            nameGroup.id = 'name-group';
+            nameGroup.innerHTML = `
+                <label for="name">Nome</label>
+                <input type="text" id="name" placeholder="Seu nome completo" required>
+            `;
+        }
+        authForm.insertBefore(nameGroup, authForm.firstChild);
     });
 
     // Envio do formulário para o Back-end
@@ -29,17 +45,61 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        const authData = {
-            email: email,
-            password: password,
-            type: currentMode // pra saber o tipo, se ta logando ou se ta cadastrando
-        };
+        mainBtn.disabled = true;
+        mainBtn.innerText = currentMode === 'login' ? 'Entrando...' : 'Cadastrando...';
 
-        console.log(`Enviando dados de ${currentMode}:`, authData);
-
-        //aqui conecta com o back api e tals, igual o outro lá
-        //fazer um negocio para ele confirmar no e-mail
-        
-        alert(`Dados capturados! Verifique o console (F12). Modo: ${currentMode}`);
+        try {
+            if (currentMode === 'login') {
+                await fazerLogin(email, password);
+            } else {
+                const name = document.getElementById('name').value;
+                await fazerCadastro(name, email, password);
+            }
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            mainBtn.disabled = false;
+            mainBtn.innerText = currentMode === 'login' ? 'Entrar' : 'Cadastrar';
+        }
     });
 });
+
+async function fazerLogin (email, password) {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email, password})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Erro ao fazer login');
+    }
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    window.location.href = 'index.html';
+}
+
+async function fazerCadastro(name, email, password) {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name, email, password})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Erro ao cadastrar');
+    }
+
+    alert('Cadastro realizado! Faça login para continuar');
+    document.getElementById('tab-login').click();
+}
