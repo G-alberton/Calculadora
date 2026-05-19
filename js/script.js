@@ -38,22 +38,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const equalsBtn = document.getElementById('equals-btn');
-    if (equalsBtn) {
-        equalsBtn.addEventListener('click', () => {
-            const secondOperand = currentInput;
+const equalsBtn = document.getElementById('equals-btn');
 
-            const dateBack = {
-                n1: firstOperand,
-                n2: secondOperand,
-                operacao: operato
-            };
+if (equalsBtn) {
+  equalsBtn.addEventListener('click', async () => {
+    if (expressao.length < 3) return;
 
-            console.log("Tá mandando para o back:", dateBack);
-
-            // Botão de igual - Preparado para a API
-        });
+    if (ehOperador(expressao[expressao.length - 1])) {
+      expressao.pop();
     }
+
+    const firstNumber = expressao[0];
+    const operatorOriginal = expressao[1];
+    const secondNumber = expressao[2];
+
+    if (!firstNumber || !operatorOriginal || !secondNumber) {
+      displayValor.innerText = 'Erro';
+      return;
+    }
+
+    const operator = operatorOriginal === '÷' ? '/' : operatorOriginal;
+
+    try {
+      const response = await fetch(`${API_URL}/api/calculations`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({
+          firstNumber,
+          secondNumber,
+          operator
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        displayValor.innerText = 'Erro';
+        console.error(data);
+        alert(data.message || 'Erro ao realizar cálculo');
+        return;
+      }
+
+      const resultado = data.calculation.result;
+
+      const expressaoTexto = `${firstNumber} ${operatorOriginal} ${secondNumber}`;
+
+      if (displayExpressao) {
+        displayExpressao.innerText = expressaoTexto + ' =';
+      }
+
+      displayValor.innerText = resultado;
+
+      expressao = [resultado.toString()];
+      digitandoNumero = true;
+      acabouDeCalcular = true;
+
+      adicionarHistoricoLocal(expressaoTexto, resultado);
+    } catch (error) {
+      console.error('Erro ao conectar com o backend:', error);
+      displayValor.innerText = 'Erro';
+      alert('Erro ao conectar com o servidor.');
+    }
+  });
+}
 
     // Botão AC aqui, para limpar
     const clearBtn = document.querySelector('[data-action="clear"]');
