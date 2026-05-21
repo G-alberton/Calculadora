@@ -1,3 +1,4 @@
+/* Insert e request para o banco para o login */
 const bcrypt = require('bcryptjs');
 const db = require('../db/connection');
 
@@ -28,6 +29,8 @@ async function authRoutes(app) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+
+    /* Inset dos dados de cadastro */
     const result = await db.query(
       `INSERT INTO users (name, email, password_hash)
        VALUES ($1, $2, $3)
@@ -40,6 +43,8 @@ async function authRoutes(app) {
     });
   });
 
+
+  /* Processo para login do usuário */
   app.post("/login", async (request, reply) => {
     const { email, password } = request.body;
 

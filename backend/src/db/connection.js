@@ -1,3 +1,5 @@
+/*Conexão com o Banco de Dados*/
+
 const { Pool } = require('pg');
 const path = require('path');
 
