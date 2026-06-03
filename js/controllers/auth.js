@@ -1,46 +1,60 @@
-//falta arrumar o auth.js para que o cookie funcione sem estar no localstorage
-
 import { login, registrar } from '../services/api.js';
 
-const inputName     = document.querySelector('#name');
-const inputEmail    = document.querySelector('#email');
-const inputPassword = document.querySelector('#password');
-const btnEntrar     = document.querySelector('#btn-login');
-const btnCadastrar  = document.querySelector('#btn-register');
+const tabLogin = document.getElementById('tab-login');
+const tabRegister = document.getElementById('tab-register');
+const authForm = document.getElementById('auth-form');
+const mainBtn = document.getElementById('main-btn');
+
+const inputNameGroup = document.createElement('div');
+inputNameGroup.className = 'input-group';
+inputNameGroup.innerHTML = `
+  <label for="name">Nome</label>
+  <input type="text" id="name" placeholder="Seu nome" minlength="2" maxlength="80">
+`
 
 let modo = 'login';
 
-btnEntrar?.addEventListener('click', () => {
+tabLogin?.addEventListener('click', () => {
   modo = 'login';
-  if (inputName) inputName.style.display = 'none';
+  tabLogin.classList.add('active');
+  tabRegister.classList.remove('active');
+  inputNameGroup.remove();
+  mainBtn.textContent = 'Entrar';
 });
 
-btnCadastrar?.addEventListener('click', () => {
+tabRegister?.addEventListener('click', () => {
   modo = 'register';
-  if (inputName) inputName.style.display = 'block';
+  tabRegister.classList.add('active');
+  tabLogin.classList.remove('active');
+  authForm.insertBefore(inputNameGroup, authForm.firstChild);
+  mainBtn.textContent = 'Cadastrar';
 });
 
-document.querySelector('form')?.addEventListener('submit', async (e) => {
+authForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const email    = inputEmail.value.trim();
-  const password = inputPassword.value.trim();
-  const name     = inputName?.value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const name = document.getElementById('name')?.value.trim();
+
+  // validações basicas no front
+  if (!email || !password) return alert('Preencha todos os campos');
+  if (password.length > 72) return alert('Senha muito longa (max 72 caractere)');
 
   try {
     if (modo === 'register') {
-      await registrar({ name, email, password });
-      alert('Cadastro realizado! Agora faça login.');
-      modo = 'login';
-      if (inputName) inputName.style.display = 'none';
+      if (!name) return alert('Informe seu nome');
+      await registrar({ name, email, password});
+      alert('Cadastro realizado! agora faça login');
+      tabLogin.click();
       return;
     }
-
+    //login - back seta o cookie automaticamente
     const data = await login({ email, password });
-    localStorage.setItem('token', data.token);
+    //salva apenas dados não-sensiveis do usuario para exibição
     localStorage.setItem('user', JSON.stringify(data.user));
     window.location.href = 'index.html';
   } catch (err) {
     alert(err.message);
   }
-});
+})

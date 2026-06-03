@@ -1,11 +1,7 @@
-//falta arrumar aqui para que o cookie não esteja no localstorage
-
 import { calcular, buscarHistorico } from '../services/api.js';
-import { ehOperador, formatarExpressao, operadorParaDisplay } from '../utils/format.js';
+import { ehOperador, formatarExpressao, operadorParaDisplay, normalizarOperador } from '../utils/format.js';
 
-const token = localStorage.getItem('token');
-if (!token) window.location.href = 'autentication.html';
-
+//se o cookie estiver ausente ou expirado, a primeira chamada retorna 401 e é direcionado automaticamente
 let expressao = [];
 let digitandoNumero = false;
 let acabouDeCalcular = false;
@@ -65,13 +61,17 @@ document.querySelectorAll('.operator').forEach((btn) => {
 async function aplicarUnaria(operador) {
   const ultimo = expressao.at(-1);
   if (!ultimo || ehOperador(ultimo)) return;
+//normaliza operador garantindo que chegue sqrt e log na api
+  const opNormalizado = normalizarOperador(operador);
+
   try {
-    const calc = await calcular({ firstNumber: ultimo, operator: operador });
-    const texto = `${operador}(${ultimo})`;
+    const calc = await calcular({ firstNumber: Number(ultimo), operador: opNormalizado});
+    const texto = `${opNormalizado}(${ultimo})`;
     displayExpressao.innerText = texto + ' =';
     displayValor.innerText = calc.result;
     expressao = [calc.result.toString()];
-    digitandoNumero = true; acabouDeCalcular = true;
+    digitandoNumero = true; 
+    acabouDeCalcular = true;
     adicionarHistoricoLocal(texto, calc.result);
   } catch (err) { alert(err.message); }
 }
@@ -85,19 +85,28 @@ document.getElementById('equals-btn')?.addEventListener('click', async () => {
   let acumulador = expressao[0];
 
   for (let i = 1; i < expressao.length; i += 2) {
-    const op = expressao[i] === '÷' ? '/' : expressao[i];
+    const op = normalizarOperador(expressao[i])
     const n2 = expressao[i + 1];
     if (!op || !n2) break;
     try {
-      const calc = await calcular({ firstNumber: acumulador, secondNumber: n2, operator: op });
+      const calc = await calcular({ 
+        firstNumber: Number(acumulador), 
+        secondNumber: Number(n2), 
+        operator: op,
+      });
       acumulador = calc.result.toString();
-    } catch (err) { displayValor.innerText = 'Erro'; alert(err.message); return; }
+    } catch (err) { 
+       displayValor.innerText = 'Erro';
+       alert(err.message); 
+       return; 
+    }
   }
 
   displayExpressao.innerText = textoCompleto + ' =';
   displayValor.innerText = acumulador;
   expressao = [acumulador];
-  digitandoNumero = true; acabouDeCalcular = true;
+  digitandoNumero = true; 
+  acabouDeCalcular = true;
   adicionarHistoricoLocal(textoCompleto, acumulador);
 });
 
@@ -105,42 +114,75 @@ document.getElementById('equals-btn')?.addEventListener('click', async () => {
 document.querySelectorAll('[data-action]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const action = btn.dataset.action;
+
     if (action === 'clear') {
       expressao = []; digitandoNumero = false; acabouDeCalcular = false;
       displayValor.innerText = '0'; displayExpressao.innerText = '';
+
     } else if (action === 'sign') {
       const u = expressao.at(-1);
-      if (u && !ehOperador(u)) { expressao[expressao.length - 1] = (parseFloat(u) * -1).toString(); atualizarDisplay(); }
+      if (u && !ehOperador(u)) {
+        expressao[expressao.length - 1] = (parseFloat(u) * -1).toString();
+        atualizarDisplay();
+      }
+
     } else if (action === 'percent') {
       const u = expressao.at(-1);
-      if (u && !ehOperador(u)) { expressao[expressao.length - 1] = (parseFloat(u) / 100).toString(); atualizarDisplay(); }
+      if (u && !ehOperador(u)) {
+        expressao[expressao.length - 1] = (parseFloat(u) / 100).toString();
+        atualizarDisplay();
+      }
+
     } else if (action === 'backspace') {
       if (acabouDeCalcular || !expressao.length) return;
       const u = expressao.at(-1);
-      if (ehOperador(u)) { expressao.pop(); digitandoNumero = true; }
-      else if (u.length > 1) expressao[expressao.length - 1] = u.slice(0, -1);
-      else { expressao.pop(); const nu = expressao.at(-1); digitandoNumero = nu ? !ehOperador(nu) : false; }
+      if (ehOperador(u)) {
+        expressao.pop(); digitandoNumero = true;
+      } else if (u.length > 1) {
+        expressao[expressao.length - 1] = u.slice(0, -1);
+      } else {
+        expressao.pop();
+        const nu = expressao.at(-1);
+        digitandoNumero = nu ? !ehOperador(nu) : false;
+      }
       atualizarDisplay();
-    } else if (action === 'sqrt') { aplicarUnaria('sqrt'); }
-      else if (action === 'log')  { aplicarUnaria('log'); }
+
+    } else if (action === 'sqrt') {
+      aplicarUnaria('sqrt');
+    } else if (action === 'log') {
+      aplicarUnaria('log');
+    }
   });
 });
 
 // Navegação entre abas
 const sectionCalc    = document.getElementById('section-calc');
 const sectionHistory = document.getElementById('section-history');
+
 document.getElementById('btn-show-calc')?.addEventListener('click', () => {
-  sectionCalc.style.display = 'block'; sectionHistory.style.display = 'none';
+  sectionCalc.style.display    = 'block';
+  sectionHistory.style.display = 'none';
 });
+
 document.getElementById('btn-show-history')?.addEventListener('click', async () => {
-  sectionCalc.style.display = 'none'; sectionHistory.style.display = 'block';
+  sectionCalc.style.display    = 'none';
+  sectionHistory.style.display = 'block';
   historyList.innerHTML = '<p style="text-align:center;color:#888;padding:20px">Carregando...</p>';
+
   const history = await buscarHistorico();
   historyList.innerHTML = '';
-  if (!history.length) { historyList.innerHTML = '<p class="empty-msg" style="text-align:center;color:#888;padding:20px">Nenhum cálculo ainda.</p>'; return; }
+
+  if (!history.length) {
+    historyList.innerHTML = '<p class="empty-msg" style="text-align:center;color:#888;padding:20px">Nenhum cálculo ainda.</p>';
+    return;
+  }
+
   history.forEach((c) => {
-    const op = operadorParaDisplay(c.operator);
-    const expr = c.second_number === null ? `${c.operator}(${c.first_number})` : `${c.first_number} ${op} ${c.second_number}`;
+    const op   = operadorParaDisplay(c.operator);
+    const expr = c.second_number === null
+      ? `${c.operator}(${c.first_number})`
+      : `${c.first_number} ${op} ${c.second_number}`;
+
     const item = document.createElement('div');
     item.className = 'history-item';
     item.style.cssText = 'padding:15px;border-bottom:1px solid #e2e8f0;text-align:right;';
@@ -150,7 +192,8 @@ document.getElementById('btn-show-history')?.addEventListener('click', async () 
 });
 
 document.getElementById('btn-exit')?.addEventListener('click', () => {
-  localStorage.removeItem('token'); localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
   window.location.href = 'autentication.html';
 });
 
