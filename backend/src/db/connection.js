@@ -18,9 +18,14 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: isSupabase
     ? {
-        rejectUnauthorized: false
+        // rejectUnauthorized: true valida o certificado SSL do servidor.
+        // Se necessário, forneça o CA do Supabase via DATABASE_CA_CERT no .env.
+        rejectUnauthorized: true,
+        ...(process.env.DATABASE_CA_CERT
+          ? { ca: process.env.DATABASE_CA_CERT }
+          : {}),
       }
-    : false
+    : false,
 });
 
 module.exports = pool;
