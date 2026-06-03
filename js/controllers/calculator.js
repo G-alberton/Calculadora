@@ -1,3 +1,5 @@
+//falta arrumar aqui para que o cookie não esteja no localstorage
+
 import { calcular, buscarHistorico } from '../services/api.js';
 import { ehOperador, formatarExpressao, operadorParaDisplay } from '../utils/format.js';
 

@@ -1,3 +1,5 @@
+//falta arrumar o auth.js para que o cookie funcione sem estar no localstorage
+
 import { login, registrar } from '../services/api.js';
 
 const inputName     = document.querySelector('#name');

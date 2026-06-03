@@ -1,5 +1,5 @@
 /*Conexão com o Banco de Dados*/
-
+//arrumar aqui depois para arrumar o ssl sem verificação de certificado, lembra de ver se eu ja arrumei a env exemplo
 const { Pool } = require('pg');
 const path = require('path');
 
