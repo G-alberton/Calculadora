@@ -197,4 +197,62 @@ document.getElementById('btn-exit')?.addEventListener('click', () => {
   window.location.href = 'autentication.html';
 });
 
+// Suporte ao teclado físico 
+document.addEventListener('keydown', (e) => {
+  // Ignora se o usuário estiver digitando em um input
+  if (e.target.tagName === 'INPUT') return;
+
+  const tecla = e.key;
+
+  // Números e ponto decimal
+  if (/^[0-9]$/.test(tecla) || tecla === '.') {
+    const btn = [...document.querySelectorAll('.number')]
+      .find(b => b.innerText === tecla);
+    btn?.click();
+    return;
+  }
+
+  // Operadores
+  const mapaOperador = {
+    '+': '+',
+    '-': '-',
+    '*': 'x',   // x é o data-op do botão de multiplicação
+    '/': '÷',   // ÷ é o data-op do botão de divisão
+    '^': '^',
+  };
+
+  if (mapaOperador[tecla]) {
+    const opDisplay = mapaOperador[tecla];
+    const btn = [...document.querySelectorAll('.operator')]
+      .find(b => b.dataset.op === opDisplay || b.innerText === opDisplay);
+    btn?.click();
+    return;
+  }
+
+  // Igual — Enter ou =
+  if (tecla === 'Enter' || tecla === '=') {
+    e.preventDefault();
+    document.getElementById('equals-btn')?.click();
+    return;
+  }
+
+  // Backspace
+  if (tecla === 'Backspace') {
+    document.querySelector('[data-action="backspace"]')?.click();
+    return;
+  }
+
+  // Escape ou Delete — limpar
+  if (tecla === 'Escape' || tecla === 'Delete') {
+    document.querySelector('[data-action="clear"]')?.click();
+    return;
+  }
+
+  // % — porcentagem
+  if (tecla === '%') {
+    document.querySelector('[data-action="percent"]')?.click();
+    return;
+  }
+});
+
 atualizarDisplay();
